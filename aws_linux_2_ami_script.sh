@@ -1,30 +1,10 @@
-# Install Stackdriver logging agent
-curl -sSO https://dl.google.com/cloudagents/install-logging-agent.sh
-sudo bash install-logging-agent.sh
+# Update and install pip3
+sudo apt-get update
+sudo apt-get install python3-pip
 
-# Install or update needed software
-apt-get update
-apt-get install -yq git supervisor python python-pip
-pip install --upgrade pip virtualenv
 
-# Account to own server process
-useradd -m -d /home/pythonapp pythonapp
 
-# Fetch source code
-export HOME=/root
-git clone https://github.com/RaguRJ/gce_instance_detail_fask_app.git /opt/app
+#Clone git repo and install requirements
+git clone https://github.com/RaguRJ/aws_instance_detail_flask_app.git
+pip3 install --user -r requirements.txt
 
-# Python environment setup
-virtualenv -p python3 /opt/app/env
-source /opt/app/env/bin/activate
-/opt/app/env/bin/pip install -r /opt/app/requirements.txt
-
-# Set ownership to newly created account
-chown -R pythonapp:pythonapp /opt/app
-
-# Put supervisor configuration in proper place
-cp /opt/app/python-app.conf /etc/supervisor/conf.d/python-app.conf
-
-# Start service via supervisorctl
-supervisorctl reread
-supervisorctl update
