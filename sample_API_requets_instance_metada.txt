@@ -1,0 +1,4 @@
+curl -X GET -H "Metadata-Flavor : Google" "http://metadata/computeMetadata/v1/instance/network-interfaces/0"
+
+# to get recursive values and output format as text
+ curl -X GET -H "Metadata-Flavor : Google" "http://metadata/computeMetadata/v1/instance/network-interfaces/?recursive=true&alt=text"
