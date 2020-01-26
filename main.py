@@ -6,7 +6,7 @@ import json
 app = Flask(__name__)
 
 # func to recursively return paths
-metadata_server = "http://169.254.169.254/latest/meta-data/"
+metadata_server = "http://169.254.169.254/latest/"
 metadata = {}
 path_dict = {}
 temp_dict = {}
@@ -26,17 +26,16 @@ def met_gen(key, path_list, url):
         print('p', p)
         if p[-1] != '/':
            api_call = api_gen(p, url+p)
-           temp_dict.update(api_call[1])
+           return api_call[1]
         else:
            api_call = api_gen(p, url+p)
            print('api_call[0]: ', api_call[0])
            print('api_call[2]: ', api_call[2])
            print('url: ', url+api_call[0])
            return met_gen(api_call[0], api_call[2], url+api_call[0])
-    print('api_call[1]: ', api_call[1])
-    return api_call[1]
+    return
 
-path_list = [x for x in requests.get(metadata_server).text.splitlines()]
+path_list = ["meta-data/"]
 path_dict.update(met_gen(None, path_list, metadata_server))
 json_data = json.dumps(path_dict, indent=4)
 
