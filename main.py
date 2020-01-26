@@ -12,47 +12,44 @@ metadata_server = "http://169.254.169.254/latest/meta-data/events/"
 #print(paths_list)
 
 # func to recursively return paths
-paths_dict = {}
-temp_dict = {}
-temp_list = []
+metadata_server = "http://169.254.169.254/latest/meta-data/"
+metadata = {}
+path_dict = {}
 
-def api_gen (url):
+
+def api_gen(key, url):
     value = requests.get(url).text
-    temp_list = [x for x in value.splitlines()]
-    if len(temp_list) <= 1:
-        if requests.get(url+temp_list[0]).status_code == 404:
-            return { 'value' : temp_list[0] }
-        else:
-            return { 'key' : temp_list[0] }
-    else:
-        print('inside api gen temp list is : ', temp_list)
-        return { 'keys' : temp_list }
+    path_list = [x for x in value.splitlines()]
+    parent_key = key
+    return parent_key, path_list
+            
 
-def dict_gen (url):
-    api_call = api_gen(url)
-    print('value of api call is: ', api_call)
-    if 'value' in api_call:
-        return api_call["value"]
-    elif 'key' in api_call:
-        paths_dict.update({ api_call['key'] : api_gen(url+api_call[ 'key' ]) })
-    elif 'keys' in api_call:
-        print(api_call['keys'])
-        for k in api_call['keys']:
-            temp_dict.update({ k, api_gen(url+k) })
-        return temp_dict 
+
+def met_gen(key, path_list, url):
+    #print(path_list)
+    for p in path_list:
+        if p[-1] != '/':
+            api_call = api_gen(p, url+p)
+     #       print(api_call[1])
+            path_dict.update({ api_call[0] : api_call[1] })
+        else:
+            api_call = api_gen(p, url+p)
+            if api_call[0] in path_dict:
+                print(api_call[0])
+                path_dict[api_call[0]] = api_call[1]
+            else:
+                path_dict.update({ api_call[0] : api_gen(api_call[0], url+p+api_call[1][0]) })
     return
 
-dict_gen(metadata_server)
-print("Dictionary is: \n ", paths_dict)
+path_list = [x for x in requests.get(metadata_server).text.splitlines()]
+met_gen(None, path_list, metadata_server)
+json_data = json.dumps(path_dict, indent=4, sort_keys=True)
 
 
-# print(requests.get(metadata_server+"[]").status_code)
+@app.route("/", methods=["GET"])
+def hello():
+    return render_template('index.html', json_data=json_data)
 
-#@app.route("/", methods=["GET"])
-#def hello():
-#    path(paths_str)
-#    return path_dict
-#
-#
-#if __name__ == "__main__":
-#    app.run(host='0.0.0.0', port=8080)
+
+if __name__ == "__main__":
+    app.run(host='0.0.0.0', port=8080)
