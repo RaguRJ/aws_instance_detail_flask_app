@@ -5,45 +5,40 @@ import json
 
 app = Flask(__name__)
 
-# getting the key and folder structure / converting text data to string to make further requests
-metadata_server = "http://169.254.169.254/latest/meta-data/events/"
-#paths = requests.get(metadata_server).text
-#paths_list = [x for x in paths.splitlines()]
-#print(paths_list)
-
 # func to recursively return paths
 metadata_server = "http://169.254.169.254/latest/meta-data/"
 metadata = {}
 path_dict = {}
-
+temp_dict = {}
 
 def api_gen(key, url):
     value = requests.get(url).text
     path_list = [x for x in value.splitlines()]
     parent_key = key
-    return parent_key, path_list
+    #print('api_gen url: ', url)
+    return parent_key, {parent_key : path_list}, path_list
             
 
 
 def met_gen(key, path_list, url):
-    #print(path_list)
     for p in path_list:
+        # path_dict.update({ p : ''})
+        print('p', p)
         if p[-1] != '/':
-            api_call = api_gen(p, url+p)
-     #       print(api_call[1])
-            path_dict.update({ api_call[0] : api_call[1] })
+           api_call = api_gen(p, url+p)
+           temp_dict.update(api_call[1])
         else:
-            api_call = api_gen(p, url+p)
-            if api_call[0] in path_dict:
-                print(api_call[0])
-                path_dict[api_call[0]] = api_call[1]
-            else:
-                path_dict.update({ api_call[0] : api_gen(api_call[0], url+p+api_call[1][0]) })
-    return
+           api_call = api_gen(p, url+p)
+           print('api_call[0]: ', api_call[0])
+           print('api_call[2]: ', api_call[2])
+           print('url: ', url+api_call[0])
+           return met_gen(api_call[0], api_call[2], url+api_call[0])
+    print('api_call[1]: ', api_call[1])
+    return api_call[1]
 
 path_list = [x for x in requests.get(metadata_server).text.splitlines()]
-met_gen(None, path_list, metadata_server)
-json_data = json.dumps(path_dict, indent=4, sort_keys=True)
+path_dict.update(met_gen(None, path_list, metadata_server))
+json_data = json.dumps(path_dict, indent=4)
 
 
 @app.route("/", methods=["GET"])
