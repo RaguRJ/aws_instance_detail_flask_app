@@ -42,6 +42,16 @@ sudo python3 main.py
 ```
 __Note:__ This method does not configure supervisor process control to run the app in the background or automatically start the app in case of a reboot. Please refer to [startup script](https://github.com/RaguRJ/aws_instance_detail_flask_app/blob/master/aws_linux_2_ami_script.sh) to configure the supervisor. Also, don't forget to add sudo when running the startup script commands on your instance.
 
+## About the Python App
+The high-level algorithm for the python app in [main.py](https://github.com/RaguRJ/aws_instance_detail_flask_app/blob/master/main.py) is as follows
+* api_gen() function takes in a key and an url and returns the parent_key and a list of values returned from the aws internal meta-data server
+* met_gen() function recursively runs through all paths in the meta-server and makes calls to api_gen() and update() functions
+* update() Update function gets a dictionary, key and a value as an input. This function searches any number of levels in a nested dictionary and updates the key with the given value.
+* Once the final nested dictionary is generated any sensitive values are deleted from the dictionary
+* The dictionary is then converted into a JSON object
+* The JSON object is sent to the 'index.html' file through the flask app and is rendered as a pre-formatted text
+
+
 ## Disclaimer
 * The instance meta-data server in aws http//:169.254.169.254/latest/meta-data/ has sensitive inforamtion under /identity-credentials/ and /public-keys/ paths. The [main.py](https://github.com/RaguRJ/aws_instance_detail_flask_app/blob/master/main.py) removes these sensitive information using the following code
 
