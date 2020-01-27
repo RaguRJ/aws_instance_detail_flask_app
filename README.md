@@ -21,7 +21,7 @@ Follow the instructions below to set-up the web app for your instances.
 * Copy the text from the [startup script](https://github.com/RaguRJ/aws_instance_detail_flask_app/blob/master/aws_linux_2_ami_script.sh) and paste it as a user data while deploying the instance
 * The startup process takes a while to complete (3-5 mins), after the initializing phase is complete open the following link in a browser "http://<Instance-IP>":8080
 
-## Deploying and running the app on a running instance
+## Deploying the app on a running instance
 
 * If you are trying to run this app on an instance that is deployed and running, simply run the following commands on your instance
 
