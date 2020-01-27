@@ -21,7 +21,7 @@ Follow the instructions below to set-up the web app for your instances.
 * Copy the text from the [startup script](https://github.com/RaguRJ/aws_instance_detail_flask_app/blob/master/aws_linux_2_ami_script.sh) and paste it as a user data while deploying the instance
 * The startup process takes a while to complete (3-5 mins), after the initializing phase is complete open the following link in a browser "http://<Instance-IP>":8080
 
-## Deploying and running app on a running instance
+## Deploying and running the app on a running instance
 
 * If you are trying to run this app on an instance that is deployed and running, simply run the following commands on your instance
 
@@ -44,7 +44,7 @@ __Note:__ This method does not configure supervisor process control to run the a
 
 ## About the Python App
 The high-level algorithm for the python app in [main.py](https://github.com/RaguRJ/aws_instance_detail_flask_app/blob/master/main.py) is as follows
-* api_gen() function takes in a key and an url and returns the parent_key and a list of values returned from the aws internal meta-data server
+* api_gen() function takes in a key and an URL and returns the parent_key and a list of values returned from the AWS internal meta-data server
 * met_gen() function recursively runs through all paths in the meta-server and makes calls to api_gen() and update() functions
 * update() Update function gets a dictionary, key and a value as an input. This function searches any number of levels in a nested dictionary and updates the key with the given value.
 * Once the final nested dictionary is generated any sensitive values are deleted from the dictionary
