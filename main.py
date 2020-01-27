@@ -8,7 +8,7 @@ app = Flask(__name__)
 # func to recursively return paths
 metadata_server = "http://169.254.169.254/latest/"
 metadata = {}
-path_dict = {}
+path_dict = {"meta-data/" : ''}
 temp_dict = {}
 
 def api_gen(key, url):
@@ -25,7 +25,9 @@ def met_gen(path_list, url):
            update(path_dict, api_call[0], api_call[1])
         else:
            api_call = api_gen(p, url+p)
-           update(path_dict, api_call[0], api_call[1])
+           print('inside met_gen folder condition api_call value: ', api_call)
+           temp_dict = { k:[] for k in api_call[1]}
+           update(path_dict, api_call[0], temp_dict)
            met_gen(api_call[1], url+api_call[0])
     return
 
@@ -35,6 +37,8 @@ def update(dic, key, value):
             dic[k] = value
         elif isinstance(v, dict):
             update(dic.get(k), key, value)
+        elif not k in dic.keys():
+            dic.update({ key : value })
     return
 
 path_list = ["meta-data/"]
