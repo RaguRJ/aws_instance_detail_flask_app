@@ -5,12 +5,12 @@ import json
 
 app = Flask(__name__)
 
-# func to recursively return paths
+# global variable initialization
 metadata_server = "http://169.254.169.254/latest/"
-metadata = {}
 path_dict = {"meta-data/" : ''}
 temp_dict = {}
 
+# function that returns a key and a list of value/values from the metadata server
 def api_gen(key, url):
     value = requests.get(url).text
     path_list = [x for x in value.splitlines()]
@@ -18,6 +18,7 @@ def api_gen(key, url):
     return parent_key, path_list
 
 
+# recursive function that goes through each folder level in the metadata api
 def met_gen(path_list, url):
     for p in path_list:
         if p[-1] != '/':
@@ -25,12 +26,12 @@ def met_gen(path_list, url):
            update(path_dict, api_call[0], api_call[1])
         else:
            api_call = api_gen(p, url+p)
-           print('inside met_gen folder condition api_call value: ', api_call)
            temp_dict = { k:[] for k in api_call[1]}
            update(path_dict, api_call[0], temp_dict)
            met_gen(api_call[1], url+api_call[0])
     return
 
+# recursive function that finds a key in a nested dictionary and updates its value
 def update(dic, key, value):
     for k,v in dic.items():
         if k == key:
@@ -41,9 +42,14 @@ def update(dic, key, value):
             dic.update({ key : value })
     return
 
+#  initializing path_list and calling met_gen function
 path_list = ["meta-data/"]
 met_gen(path_list, metadata_server)
-print(path_dict)
+
+# Deleting sensitive information from the dictionary
+del path_dict["meta-data/"]["identity-credentials/"]
+del path_dict["meta-data/"]["public-keys/"]
+
 json_data = json.dumps(path_dict, indent=4)
 
 
