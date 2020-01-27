@@ -1,31 +1,40 @@
+#!/bin/bash
 # Update and install pip3
-sudo yum update -y
-sudo yum install python3-pip -y
-sudo yum install python-pip -y
-sudo yum install git -y
-sudo pip install --upgrade pip virtualenv
-sudo amazon-linux-extras install epel -y
-sudo yum install supervisor -y
+yum update -y
+yum install python3-pip -y
+yum install python-pip -y
+yum install git -y
+pip install --upgrade pip virtualenv
+amazon-linux-extras install epel -y
+yum install supervisor -y
 
 # Account to own server process
-sudo useradd -m -d /home/pythonapp pythonapp
+useradd -m -d /home/pythonapp pythonapp
 
 # Fetch source code
 export HOME=/root
-sudo git clone https://github.com/RaguRJ/aws_instance_detail_flask_app.git /opt/app
+git clone https://github.com/RaguRJ/aws_instance_detail_flask_app.git /opt/app
 
 # Supervisor configuration
-sudo cp /opt/app/supervisord.conf /etc/supervisord.conf
+cp /opt/app/supervisord.conf /etc/supervisord.conf
 
 # Python environment setup
-sudo virtualenv -p python3 /opt/app/env
+virtualenv -p python3 /opt/app/env
 source /opt/app/env/bin/activate
-sudo /opt/app/env/bin/pip install -r /opt/app/requirements.txt
+/opt/app/env/bin/pip install -r /opt/app/requirements.txt
 
 # Set ownership to newly created account
-sudo chown -R pythonapp:pythonapp /opt/app
+chown -R pythonapp:pythonapp /opt/app
 
 # Starting and updating the supervisor process
-sudo supervisord -c /etc/supervisord.conf
-sudo supervisorctl reread
-sudo supervisorctl update
+supervisord -c /etc/supervisord.conf
+supervisorctl reread
+supervisorctl update
+
+# Commands to configure automatic start of pythonapp after system reboot
+cp /opt/app/supervisord /etc/init.d/supervisord
+chmod +x /etc/init.d/supervisord
+chkconfig --add supervisord
+chkconfig supervisord on
+service supervisord start
+
