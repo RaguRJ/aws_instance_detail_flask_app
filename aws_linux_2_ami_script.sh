@@ -1,5 +1,5 @@
 #!/bin/bash
-# Update and install pip3
+# Update and install necessary packages
 yum update -y
 yum install python3-pip -y
 yum install python-pip -y
