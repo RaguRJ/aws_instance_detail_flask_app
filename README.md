@@ -43,7 +43,7 @@ sudo python3 main.py
 __Note:__ This method does not configure supervisor process control to run the app in the background or automatically start the app in case of a reboot. Plese refere to [startup script](https://github.com/RaguRJ/aws_instance_detail_flask_app/blob/master/aws_linux_2_ami_script.sh) to configure supervisor. Also, dont forget to add sudo when running the startup script commands on your instance.
 
 ## Disclaimer
-* The instance meta-data server in aws http//:169.254.169.254/latest/meta-data server has sensitive inforamtion under /identity-credentials/ and /public-keys/ paths. The [main.py](https://github.com/RaguRJ/aws_instance_detail_flask_app/blob/master/main.py) removes these sensitive information using the following code
+* The instance meta-data server in aws http//:169.254.169.254/latest/meta-data/ has sensitive inforamtion under /identity-credentials/ and /public-keys/ paths. The [main.py](https://github.com/RaguRJ/aws_instance_detail_flask_app/blob/master/main.py) removes these sensitive information using the following code
 
 ```
 # Deleting sensitive information from the dictionary
