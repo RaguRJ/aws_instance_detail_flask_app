@@ -25,9 +25,7 @@ sudo /opt/app/env/bin/pip install -r /opt/app/requirements.txt
 # Set ownership to newly created account
 sudo chown -R pythonapp:pythonapp /opt/app
 
-# Put supervisor configuration in proper place
-sudo cp /opt/app/python-app.conf /etc/supervisor.d/python-app.conf
-
-# Start service via supervisorctl
-supervisorctl reread
-supervisorctl update
+# Starting and updating the supervisor process
+sudo supervisord -c /etc/supervisord.conf
+sudo supervisorctl reread
+sudo supervisorctl update
