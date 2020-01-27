@@ -15,28 +15,31 @@ def api_gen(key, url):
     value = requests.get(url).text
     path_list = [x for x in value.splitlines()]
     parent_key = key
-    #print('api_gen url: ', url)
-    return parent_key, {parent_key : path_list}, path_list
-            
+    return parent_key, path_list
 
 
-def met_gen(key, path_list, url):
+def met_gen(path_list, url):
     for p in path_list:
-        # path_dict.update({ p : ''})
-        print('p', p)
         if p[-1] != '/':
            api_call = api_gen(p, url+p)
-           return api_call[1]
+           update(path_dict, api_call[0], api_call[1])
         else:
            api_call = api_gen(p, url+p)
-           print('api_call[0]: ', api_call[0])
-           print('api_call[2]: ', api_call[2])
-           print('url: ', url+api_call[0])
-           return met_gen(api_call[0], api_call[2], url+api_call[0])
+           update(path_dict, api_call[0], api_call[1])
+           met_gen(api_call[1], url+api_call[0])
+    return
+
+def update(dic, key, value):
+    for k,v in dic.items():
+        if k == key:
+            dic[k] = value
+        elif isinstance(v, dict):
+            update(dic.get(k), key, value)
     return
 
 path_list = ["meta-data/"]
-path_dict.update(met_gen(None, path_list, metadata_server))
+met_gen(path_list, metadata_server)
+print(path_dict)
 json_data = json.dumps(path_dict, indent=4)
 
 
